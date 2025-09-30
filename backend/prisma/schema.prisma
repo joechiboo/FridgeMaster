@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  fridges   Fridge[]
+}
+
+model Fridge {
+  id        String   @id @default(uuid())
+  name      String
+  ownerId   String
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  items     Item[]
+}
+
+model Item {
+  id         String     @id @default(uuid())
+  fridgeId   String
+  fridge     Fridge     @relation(fields: [fridgeId], references: [id], onDelete: Cascade)
+  name       String
+  quantity   Float
+  unit       String
+  boughtAt   DateTime
+  expireAt   DateTime
+  category   String?
+  note       String?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  reminders  Reminder[]
+}
+
+model Reminder {
+  id          String   @id @default(uuid())
+  itemId      String
+  item        Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  daysBefore  Int
+  scheduledAt DateTime
+  status      String   @default("pending") // pending, sent, cancelled
+  createdAt   DateTime @default(now())
+}
