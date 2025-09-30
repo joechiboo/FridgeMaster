@@ -155,6 +155,11 @@ npm run lint     # 執行 ESLint
 
 詳細說明請參考 `backend/README.md`
 
+## 📚 文件
+
+- **[部署指南 (docs/DEPLOY.md)](docs/DEPLOY.md)** - GitHub Pages 完整部署教學與疑難排解
+- **[快速部署 (DEPLOYMENT.md)](DEPLOYMENT.md)** - 簡易部署步驟
+
 ## 貢獻
 
 歡迎提出 Issue 或 Pull Request！
