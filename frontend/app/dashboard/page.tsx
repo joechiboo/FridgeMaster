@@ -9,6 +9,7 @@ import { format } from 'date-fns'
 import { zhTW } from 'date-fns/locale'
 import AddItemModal from './AddItemModal'
 import CreateFridgeModal from './CreateFridgeModal'
+import ConfirmDialog from '@/components/ConfirmDialog'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -19,6 +20,11 @@ export default function DashboardPage() {
   const [showCreateFridge, setShowCreateFridge] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
+  const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; itemId: string | null; itemName: string }>({
+    show: false,
+    itemId: null,
+    itemName: '',
+  })
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -215,11 +221,13 @@ export default function DashboardPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         onClick={() => {
-                          if (confirm('確定要刪除這個食材嗎？')) {
-                            deleteItemMutation.mutate(item.id)
-                          }
+                          setDeleteConfirm({
+                            show: true,
+                            itemId: item.id,
+                            itemName: item.name,
+                          })
                         }}
-                        className="text-red-600 hover:text-red-900"
+                        className="text-red-600 hover:text-red-900 transition"
                       >
                         刪除
                       </button>
@@ -257,6 +265,25 @@ export default function DashboardPage() {
           }}
         />
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteConfirm.show}
+        title="刪除食材"
+        message={`確定要刪除「${deleteConfirm.itemName}」嗎？此操作無法復原。`}
+        confirmText="刪除"
+        cancelText="取消"
+        type="danger"
+        onConfirm={() => {
+          if (deleteConfirm.itemId) {
+            deleteItemMutation.mutate(deleteConfirm.itemId)
+          }
+          setDeleteConfirm({ show: false, itemId: null, itemName: '' })
+        }}
+        onCancel={() => {
+          setDeleteConfirm({ show: false, itemId: null, itemName: '' })
+        }}
+      />
     </div>
   )
 }
