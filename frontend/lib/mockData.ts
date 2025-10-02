@@ -278,4 +278,18 @@ export const mockApi = {
     const filtered = items.filter((item: Item) => item.id !== itemId)
     localStorage.setItem(STORAGE_KEYS.ITEMS, JSON.stringify(filtered))
   },
+
+  // Adjust quantity (purchase/use)
+  adjustQuantity: async (itemId: string, amount: number) => {
+    await new Promise((resolve) => setTimeout(resolve, 300))
+    const items = JSON.parse(localStorage.getItem(STORAGE_KEYS.ITEMS) || '[]')
+    const index = items.findIndex((item: Item) => item.id === itemId)
+    if (index !== -1) {
+      items[index].quantity = Math.max(0, items[index].quantity + amount)
+      items[index].updatedAt = new Date().toISOString()
+      localStorage.setItem(STORAGE_KEYS.ITEMS, JSON.stringify(items))
+      return items[index]
+    }
+    throw new Error('Item not found')
+  },
 }

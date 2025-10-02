@@ -9,6 +9,7 @@ import { format } from 'date-fns'
 import { zhTW } from 'date-fns/locale'
 import AddItemModal from './AddItemModal'
 import CreateFridgeModal from './CreateFridgeModal'
+import AdjustQuantityModal from './AdjustQuantityModal'
 import ConfirmDialog from '@/components/ConfirmDialog'
 
 export default function DashboardPage() {
@@ -20,6 +21,12 @@ export default function DashboardPage() {
   const [showCreateFridge, setShowCreateFridge] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
+  const [activeTab, setActiveTab] = useState<'fridge' | 'database'>('fridge')
+  const [adjustQuantity, setAdjustQuantity] = useState<{
+    show: boolean
+    item: any
+    mode: 'purchase' | 'use'
+  } | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; itemId: string | null; itemName: string }>({
     show: false,
     itemId: null,
@@ -79,7 +86,7 @@ export default function DashboardPage() {
     if (daysUntilExpiry < 0) return 'text-red-700 bg-red-50'
     if (daysUntilExpiry <= 3) return 'text-orange-700 bg-orange-50'
     if (daysUntilExpiry <= 7) return 'text-yellow-700 bg-yellow-50'
-    return 'text-gray-700'
+    return 'text-gray-900 bg-white'
   }
 
   if (fridgesLoading) {
@@ -109,8 +116,37 @@ export default function DashboardPage() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Fridge Selection */}
-        <div className="mb-6 flex justify-between items-center">
+        {/* Tab Navigation */}
+        <div className="mb-6 border-b border-gray-200">
+          <nav className="-mb-px flex space-x-8">
+            <button
+              onClick={() => setActiveTab('fridge')}
+              className={`${
+                activeTab === 'fridge'
+                  ? 'border-primary-500 text-primary-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+            >
+              冰箱頁面
+            </button>
+            <button
+              onClick={() => setActiveTab('database')}
+              className={`${
+                activeTab === 'database'
+                  ? 'border-primary-500 text-primary-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+            >
+              食材資料庫
+            </button>
+          </nav>
+        </div>
+
+        {/* Fridge Page Content */}
+        {activeTab === 'fridge' && (
+          <>
+            {/* Fridge Selection */}
+            <div className="mb-6 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <label className="text-sm font-medium text-gray-700">選擇冰箱：</label>
             <select
@@ -192,6 +228,9 @@ export default function DashboardPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     備註
                   </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    庫存調整
+                  </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     操作
                   </th>
@@ -218,6 +257,24 @@ export default function DashboardPage() {
                     <td className="px-6 py-4 text-sm">
                       {item.note || '-'}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <div className="flex items-center justify-center space-x-2">
+                        <button
+                          onClick={() => setAdjustQuantity({ show: true, item, mode: 'use' })}
+                          className="px-3 py-1 bg-orange-100 text-orange-700 rounded hover:bg-orange-200 transition text-sm font-medium"
+                          title="使用食材"
+                        >
+                          使用
+                        </button>
+                        <button
+                          onClick={() => setAdjustQuantity({ show: true, item, mode: 'purchase' })}
+                          className="px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 transition text-sm font-medium"
+                          title="採購食材"
+                        >
+                          採購
+                        </button>
+                      </div>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         onClick={() => {
@@ -242,6 +299,23 @@ export default function DashboardPage() {
             <p className="text-gray-500">目前沒有食材，點擊上方按鈕新增食材</p>
           </div>
         )}
+          </>
+        )}
+
+        {/* Ingredient Database Content */}
+        {activeTab === 'database' && (
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold text-gray-900">食材資料庫</h2>
+              <button className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700">
+                + 新增食材
+              </button>
+            </div>
+            <div className="text-center py-12">
+              <p className="text-gray-500">食材資料庫功能開發中...</p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Modals */}
@@ -262,6 +336,19 @@ export default function DashboardPage() {
           onSuccess={() => {
             queryClient.invalidateQueries({ queryKey: ['fridges'] })
             setShowCreateFridge(false)
+          }}
+        />
+      )}
+
+      {/* Adjust Quantity Modal */}
+      {adjustQuantity?.show && adjustQuantity.item && (
+        <AdjustQuantityModal
+          item={adjustQuantity.item}
+          mode={adjustQuantity.mode}
+          onClose={() => setAdjustQuantity(null)}
+          onSuccess={() => {
+            queryClient.invalidateQueries({ queryKey: ['items'] })
+            setAdjustQuantity(null)
           }}
         />
       )}
