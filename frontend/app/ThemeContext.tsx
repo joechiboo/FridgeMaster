@@ -52,7 +52,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 export function useTheme() {
   const context = useContext(ThemeContext)
   if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider')
+    // 在 SSR 時返回預設值，避免錯誤
+    return {
+      theme: 'light' as Theme,
+      toggleTheme: () => {},
+    }
   }
   return context
 }
