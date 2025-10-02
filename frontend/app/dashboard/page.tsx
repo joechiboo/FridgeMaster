@@ -11,6 +11,7 @@ import AddItemModal from './AddItemModal'
 import CreateFridgeModal from './CreateFridgeModal'
 import AdjustQuantityModal from './AdjustQuantityModal'
 import ConfirmDialog from '@/components/ConfirmDialog'
+import { ThemeToggle } from '../ThemeToggle'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -83,10 +84,10 @@ export default function DashboardPage() {
       (new Date(expireAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
     )
 
-    if (daysUntilExpiry < 0) return 'text-red-700 bg-red-50'
-    if (daysUntilExpiry <= 3) return 'text-orange-700 bg-orange-50'
-    if (daysUntilExpiry <= 7) return 'text-yellow-700 bg-yellow-50'
-    return 'text-gray-900 bg-white'
+    if (daysUntilExpiry < 0) return 'text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/30'
+    if (daysUntilExpiry <= 3) return 'text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30'
+    if (daysUntilExpiry <= 7) return 'text-yellow-700 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/30'
+    return 'text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800'
   }
 
   if (fridgesLoading) {
@@ -98,16 +99,18 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <ThemeToggle />
+
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">冰箱管理大師</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">冰箱管理大師</h1>
           <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-600">{user?.email}</span>
+            <span className="text-sm text-gray-600 dark:text-gray-300">{user?.email}</span>
             <button
               onClick={handleLogout}
-              className="text-sm text-primary-600 hover:text-primary-700"
+              className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
             >
               登出
             </button>
@@ -117,14 +120,14 @@ export default function DashboardPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Tab Navigation */}
-        <div className="mb-6 border-b border-gray-200">
+        <div className="mb-6 border-b border-gray-200 dark:border-gray-700">
           <nav className="-mb-px flex space-x-8">
             <button
               onClick={() => setActiveTab('fridge')}
               className={`${
                 activeTab === 'fridge'
-                  ? 'border-primary-500 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
               } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
             >
               冰箱頁面
@@ -133,8 +136,8 @@ export default function DashboardPage() {
               onClick={() => setActiveTab('database')}
               className={`${
                 activeTab === 'database'
-                  ? 'border-primary-500 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
               } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
             >
               食材資料庫
@@ -148,11 +151,11 @@ export default function DashboardPage() {
             {/* Fridge Selection */}
             <div className="mb-6 flex justify-between items-center">
           <div className="flex items-center space-x-4">
-            <label className="text-sm font-medium text-gray-700">選擇冰箱：</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">選擇冰箱：</label>
             <select
               value={selectedFridge || ''}
               onChange={(e) => setSelectedFridge(e.target.value)}
-              className="rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+              className="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
             >
               {fridges?.map((fridge: any) => (
                 <option key={fridge.id} value={fridge.id}>
@@ -162,7 +165,7 @@ export default function DashboardPage() {
             </select>
             <button
               onClick={() => setShowCreateFridge(true)}
-              className="text-sm text-primary-600 hover:text-primary-700"
+              className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
             >
               + 新增冰箱
             </button>
@@ -184,12 +187,12 @@ export default function DashboardPage() {
             placeholder="搜尋食材..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+            className="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
           />
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+            className="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
           >
             <option value="">所有分類</option>
             <option value="蔬菜">蔬菜</option>
@@ -204,39 +207,39 @@ export default function DashboardPage() {
 
         {/* Items Table */}
         {itemsLoading ? (
-          <div className="text-center py-8">載入中...</div>
+          <div className="text-center py-8 text-gray-600 dark:text-gray-400">載入中...</div>
         ) : items && items.length > 0 ? (
-          <div className="bg-white shadow-md rounded-lg overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+          <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     食材名稱
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     數量
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     分類
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     購買日期
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     到期日期
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     備註
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     庫存調整
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     操作
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {items.map((item: any) => (
                   <tr key={item.id} className={getExpiryColor(item.expireAt)}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -284,7 +287,7 @@ export default function DashboardPage() {
                             itemName: item.name,
                           })
                         }}
-                        className="text-red-600 hover:text-red-900 transition"
+                        className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition"
                       >
                         刪除
                       </button>
@@ -295,8 +298,8 @@ export default function DashboardPage() {
             </table>
           </div>
         ) : (
-          <div className="text-center py-12 bg-white rounded-lg shadow">
-            <p className="text-gray-500">目前沒有食材，點擊上方按鈕新增食材</p>
+          <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow">
+            <p className="text-gray-500 dark:text-gray-400">目前沒有食材，點擊上方按鈕新增食材</p>
           </div>
         )}
           </>
@@ -304,15 +307,15 @@ export default function DashboardPage() {
 
         {/* Ingredient Database Content */}
         {activeTab === 'database' && (
-          <div className="bg-white shadow-md rounded-lg p-6">
+          <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">食材資料庫</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">食材資料庫</h2>
               <button className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700">
                 + 新增食材
               </button>
             </div>
             <div className="text-center py-12">
-              <p className="text-gray-500">食材資料庫功能開發中...</p>
+              <p className="text-gray-500 dark:text-gray-400">食材資料庫功能開發中...</p>
             </div>
           </div>
         )}
